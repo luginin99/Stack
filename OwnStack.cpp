@@ -6,13 +6,35 @@ struct Stack
 {
     int* data;
     size_t capacity = 0;
-    size_t size = 0;
+    int size = 0;
 };
+
+int StackOK (Stack* stk)
+{
+    if (stk == NULL)
+    {
+        printf ("Stack pointer = NULL\n");
+        return 0;
+    }
+
+    if (stk->size > stk->capacity)
+    {
+        printf ("Stack overflow\n");
+        return 0;
+    }
+    if (stk->size < 0)
+    {
+        printf ("False size\n");
+        return 0;
+    }
+
+    return 1;
+
+}
 
 void StackPush (Stack* stk, int value)
 {
-    assert (stk);
-    assert (stk->size < stk->capacity);
+    assert (StackOK(stk));
 
     stk->data [stk->size] = value;
 
@@ -22,19 +44,19 @@ void StackPush (Stack* stk, int value)
 
 int StackPop (Stack* stk)
 {
-    assert (stk);
+    assert (StackOK(stk));
+
     assert (stk->size > 0);
 
     stk->size --;
     stk->data [stk->size] = 0;
 
-
-    assert (stk->size >= 0);
+    assert (StackOK(stk));
 }
 
 void StackClean (Stack* stk)
 {
-    assert (stk);
+    assert (StackOK(stk));
 
     for (int i = stk->capacity - 1; i > stk->size; i--)
         stk->data[i] = 0;
@@ -51,23 +73,22 @@ void StackClean (Stack* stk)
 
 int StackTop (Stack* stk)
 {
-    assert (stk);
+    assert (StackOK(stk));
     assert (stk->size > 0);
-
 
     return (stk->data [stk->size-1]);
 }
 
 int StackSize (Stack* stk)
 {
-    assert (stk);
+    assert (StackOK(stk));
 
     return stk->size;
 }
 
 int StackEmpty (Stack* stk)
 {
-    assert (stk);
+    assert (StackOK(stk));
 
     if (stk->size == 0)
         return 1;
@@ -77,7 +98,7 @@ int StackEmpty (Stack* stk)
 
 int StackIsFull (Stack* stk)
 {
-    assert (stk);
+    assert (StackOK(stk));
 
     if ((stk->size) == stk->capacity)
         return 1;
@@ -85,25 +106,10 @@ int StackIsFull (Stack* stk)
         return 0;
 }
 
-int StackOK (Stack* stk)
-{
-    if (stk == NULL)
-    {
-        printf ("Stack pointer = NULL\n");
-        return 0;
-    }
-
-    if (stk->size > stk->capacity)
-    {
-        printf ("Stack overflow\n");
-        return 0;
-    }
-    return 1;
-}
 
 void StackDump (Stack* stk)
 {
-    assert (stk);
+    assert (StackOK(stk));
 
     printf ("Stack capacity = %d\n", stk->capacity);
     printf ("Stack size = %d\n", stk->size);
@@ -120,7 +126,7 @@ void StackDump (Stack* stk)
 
 void StackCreate (Stack* stk, int capacity)
 {
-    assert (stk);
+    assert (StackOK(stk));
 
     stk->capacity = capacity;
 
@@ -131,25 +137,39 @@ void StackCreate (Stack* stk, int capacity)
 
 void StackDestroy (Stack* stk)
 {
+    assert (StackOK(stk));
+
     free (stk->data);
     stk->data = NULL;
     stk->capacity = 0;
     stk->size = 0;
 }
 
-void StackChangeSize (Stack* stk, int new_capacity)
+void StackCopy (Stack* stk_old, Stack* stk_new)
 {
-    Stack stk_tmp;
+    assert (StackOK(stk_old));
+    assert (StackOK(stk_new));
 
-    StackCreate(&stk_tmp, stk->capacity);
-    stk_tmp.size = stk->size;
+    StackCreate(stk_new, stk_old->capacity);
+    stk_new->size = stk_old->size;
 
-    for (int i = 0; i < stk->size ; i ++)
+    for (int i = 0; i < stk_old->size ; i ++)
     {
-        stk_tmp.data[i] = stk->data[i];
+        stk_new->data[i] = stk_old->data[i];
     }
 
+}
+
+void StackChangeSize (Stack* stk, int new_capacity)
+{
+    assert (StackOK(stk));
+
+    Stack stk_tmp;
+
+    StackCopy (stk, &stk_tmp);
+
     StackCreate (stk, new_capacity);
+
     assert (stk_tmp.size < stk->capacity);
 
     for (int i = 0; i < stk_tmp.size ; i ++)
