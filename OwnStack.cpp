@@ -137,21 +137,27 @@ void StackDestroy (Stack* stk)
     stk->size = 0;
 }
 
-int main ()
+void StackChangeSize (Stack* stk, int new_capacity)
 {
-    Stack stk;
-    StackCreate(&stk, 6);
-    StackPush (&stk, 1);
-    StackPush (&stk, 9);
-    StackPush (&stk, -15);
-    StackPush (&stk, 65);
-    StackPush (&stk, 156);
+    Stack stk_tmp;
 
-    StackDump(&stk);
+    StackCreate(&stk_tmp, stk->capacity);
+    stk_tmp.size = stk->size;
 
-    StackDestroy (&stk);
+    for (int i = 0; i < stk->size ; i ++)
+    {
+        stk_tmp.data[i] = stk->data[i];
+    }
 
-    StackDump (&stk);
+    StackCreate (stk, new_capacity);
+    assert (stk_tmp.size < stk->capacity);
 
+    for (int i = 0; i < stk_tmp.size ; i ++)
+    {
+        stk->data[i] = stk_tmp.data[i];
+    }
 
+    stk->size = stk_tmp.size;
 }
+
+
