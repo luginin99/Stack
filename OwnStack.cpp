@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 
 struct Stack
 {
     int* data;
-    size_t capacity = 8;
+    size_t capacity = 0;
     size_t size = 0;
 };
 
@@ -114,9 +115,43 @@ void StackDump (Stack* stk)
 
     for (int i = 0; i < stk->capacity; i++)
         printf ("%10d", stk->data[i]);
+    printf ("\n");
 }
 
+void StackCreate (Stack* stk, int capacity)
+{
+    assert (stk);
+
+    stk->capacity = capacity;
+
+    stk->data  = (int*) calloc (capacity, sizeof (int));
+
+    stk->size = 0;
+}
+
+void StackDestroy (Stack* stk)
+{
+    free (stk->data);
+    stk->data = NULL;
+    stk->capacity = 0;
+    stk->size = 0;
+}
+
+int main ()
+{
+    Stack stk;
+    StackCreate(&stk, 6);
+    StackPush (&stk, 1);
+    StackPush (&stk, 9);
+    StackPush (&stk, -15);
+    StackPush (&stk, 65);
+    StackPush (&stk, 156);
+
+    StackDump(&stk);
+
+    StackDestroy (&stk);
+
+    StackDump (&stk);
 
 
-
-
+}
