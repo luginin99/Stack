@@ -159,5 +159,3 @@ void StackChangeSize (Stack* stk, int new_capacity)
 
     stk->size = stk_tmp.size;
 }
-
-
